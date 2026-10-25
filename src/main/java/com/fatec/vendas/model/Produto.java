@@ -1,31 +1,23 @@
 package com.fatec.vendas.model;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "produtos")
 public class Produto {
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @NotBlank(message = "Codigo do produto invalido")
-    @Column(nullable = false, unique = true)
     private String codigo;
-
-    @NotBlank(message = "Descricao do produto invalida")
-    @Column(nullable = false)
     private String descricao;
-
-    @Positive(message = "Preco do produto invalido")
-    @Column(nullable = false)
     private double preco;
-
-    // atributo para controle de estoque
-    @Positive(message = "Quantidade em estoque do produto invalida")
-    @Column(name = "quantidade_estoque", nullable = false)
     private int quantidadeEstoque;
 
     public Produto() {
@@ -67,7 +59,7 @@ public class Produto {
     }
 
     public void setCodigo(String codigo) {
-        if (codigo == null || codigo.trim().isEmpty()) {
+       if (codigo == null || codigo.isBlank()) {
             throw new IllegalArgumentException("Codigo do produto invalido");
         }
         this.codigo = codigo;
@@ -78,7 +70,7 @@ public class Produto {
     }
 
     public void setDescricao(String descricao) {
-        if (descricao == null || descricao.trim().isEmpty()) {
+        if(descricao == null || descricao.isBlank()) {
             throw new IllegalArgumentException("Descricao do produto invalida");
         }
         this.descricao = descricao;
@@ -89,7 +81,7 @@ public class Produto {
     }
 
     public void setPreco(double preco) {
-        if (preco <= 0) {
+        if (!Double.isFinite(preco) || preco <= 0) {
             throw new IllegalArgumentException("Preco do produto invalido");
         }
         this.preco = preco;
@@ -106,14 +98,21 @@ public class Produto {
         this.quantidadeEstoque = quantidadeEstoque;
     }
 
-    // Metodos legados para retrocompatibilidade
-    @Deprecated
-    public String getNome() {
-        return this.descricao;
+    @Override
+    public boolean equals(Object objeto) {
+        if (this == objeto) {
+            return true;
+        }
+        if (!(objeto instanceof Produto outroProduto)) {
+            return false;
+        }
+
+        Long ide = getId();
+        return ide != null && ide.equals(outroProduto.getId());
     }
 
-    @Deprecated
-    public void setNome(String nome) {
-        setDescricao(nome);
+    @Override
+    public int hashCode() {
+        return Produto.class.hashCode();
     }
 }

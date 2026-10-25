@@ -1,14 +1,16 @@
 package com.fatec.vendas.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
 
 import org.junit.jupiter.api.Test;
 
 public class TUProdutoTests {
 
         @Test
-        public void deveCriarProdutoComSucessoQuandoDadosValidos() {
+        void deveCriarProdutoComSucessoQuandoDadosValidos() {
                 Produto produto = new Produto("COD001", "Teclado Mecanico", 250.00, 10);
                 produto.setId(1L);
 
@@ -20,7 +22,7 @@ public class TUProdutoTests {
         }
 
         @Test
-        public void deveLancarExcecaoQuandoCodigoNuloOuVazio() {
+        void deveLancarExcecaoQuandoCodigoNuloOuVazio() {
                 Produto produto = new Produto();
 
                 IllegalArgumentException exNulo = assertThrows(
@@ -32,10 +34,15 @@ public class TUProdutoTests {
                                 IllegalArgumentException.class,
                                 () -> produto.setCodigo("   "));
                 assertEquals("Codigo do produto invalido", exVazio.getMessage());
+
+                IllegalArgumentException exEspacoUnicode = assertThrows(
+                                IllegalArgumentException.class,
+                                () -> produto.setCodigo("\u2003"));
+                assertEquals("Codigo do produto invalido", exEspacoUnicode.getMessage());
         }
 
         @Test
-        public void deveLancarExcecaoQuandoDescricaoNulaOuVazia() {
+        void deveLancarExcecaoQuandoDescricaoNulaOuVazia() {
                 Produto produto = new Produto();
 
                 IllegalArgumentException exNulo = assertThrows(
@@ -48,15 +55,20 @@ public class TUProdutoTests {
                                 () -> produto.setDescricao("   "));
                 assertEquals("Descricao do produto invalida", exVazio.getMessage());
 
-                // Metodo legado setNome
+                // Rejeita descricao vazia
                 IllegalArgumentException exNome = assertThrows(
                                 IllegalArgumentException.class,
-                                () -> produto.setNome(""));
+                                () -> produto.setDescricao(""));
                 assertEquals("Descricao do produto invalida", exNome.getMessage());
+
+                IllegalArgumentException exEspacoUnicode = assertThrows(
+                                IllegalArgumentException.class,
+                                () -> produto.setDescricao("\u2003"));
+                assertEquals("Descricao do produto invalida", exEspacoUnicode.getMessage());
         }
 
         @Test
-        public void deveLancarExcecaoQuandoPrecoZeroOuNegativo() {
+        void deveLancarExcecaoQuandoPrecoNaoForPositivoOuFinito() {
                 Produto produto = new Produto();
 
                 IllegalArgumentException exZero = assertThrows(
@@ -68,10 +80,20 @@ public class TUProdutoTests {
                                 IllegalArgumentException.class,
                                 () -> produto.setPreco(-10.0));
                 assertEquals("Preco do produto invalido", exNegativo.getMessage());
+
+                IllegalArgumentException exNaN = assertThrows(
+                                IllegalArgumentException.class,
+                                () -> produto.setPreco(Double.NaN));
+                assertEquals("Preco do produto invalido", exNaN.getMessage());
+
+                IllegalArgumentException exInfinito = assertThrows(
+                                IllegalArgumentException.class,
+                                () -> produto.setPreco(Double.POSITIVE_INFINITY));
+                assertEquals("Preco do produto invalido", exInfinito.getMessage());
         }
 
         @Test
-        public void deveLancarExcecaoQuandoQuantidadeEstoqueZeroOuNegativa() {
+        void deveLancarExcecaoQuandoQuantidadeEstoqueZeroOuNegativa() {
                 Produto produto = new Produto();
 
                 IllegalArgumentException exZero = assertThrows(
@@ -86,7 +108,7 @@ public class TUProdutoTests {
         }
 
         @Test
-        public void deveLancarExcecaoQuandoIdMenorOuIgualAZero() {
+        void deveLancarExcecaoQuandoIdMenorOuIgualAZero() {
                 Produto produto = new Produto();
 
                 IllegalArgumentException exZero = assertThrows(
@@ -101,14 +123,26 @@ public class TUProdutoTests {
         }
 
         @Test
-        public void deveBaixarEstoqueComSucesso() {
+        void deveBaixarEstoqueComSucesso() {
                 Produto produto = new Produto("COD001", "Mouse", 50.0, 10);
                 produto.baixarEstoque(4);
                 assertEquals(6, produto.getQuantidadeEstoque());
         }
 
         @Test
-        public void deveLancarExcecaoAoBaixarEstoqueComQuantidadeInvalida() {
+        void deveConsiderarProdutosComMesmoIdComoIguais() {
+                Produto primeiro = new Produto("COD001", "Mouse", 50.0, 10);
+                primeiro.setId(1L);
+                Produto segundo = new Produto("COD002", "Teclado", 100.0, 5);
+                segundo.setId(1L);
+
+                assertEquals(primeiro, segundo);
+                assertEquals(primeiro.hashCode(), segundo.hashCode());
+        }
+
+
+        @Test
+        void deveLancarExcecaoAoBaixarEstoqueComQuantidadeInvalida() {
                 Produto produto = new Produto("COD001", "Mouse", 50.0, 10);
 
                 IllegalArgumentException exZero = assertThrows(

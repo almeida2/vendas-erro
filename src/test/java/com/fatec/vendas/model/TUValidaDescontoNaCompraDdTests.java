@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
 
-public class TUReq16ValidaDescontoNaCompraDdTests {
+public class TUValidaDescontoNaCompraDdTests {
 
     DescontoNaVenda descontoNaVenda = new DescontoNaVenda();
 

@@ -3,9 +3,12 @@ package com.fatec.vendas.servico;
 import java.util.List;
 import java.util.Optional;
 
-import com.fatec.vendas.model.Produto;
+import org.springframework.stereotype.Repository;
 
+import com.fatec.vendas.model.Produto;
+@Repository 
 public interface IProdutoService {
+    
     Produto cadastrarProduto(Produto produto);
 
     List<Produto> listarTodos();
@@ -14,5 +17,5 @@ public interface IProdutoService {
 
     Optional<Produto> atualizar(Long id, Produto produto);
 
-    boolean deletar(Long id);
+    void deletar(Long id);
 }
